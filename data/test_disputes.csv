@@ -1,0 +1,6 @@
+dispute_id,reason_code,amount,order_date,delivered,delivery_date,tracking_id,receiver_confirmation,customer_contacted_support,within_return_window,respond_by
+disp_001,goods_services_not_received,2499,2026-08-01,True,2026-08-05,TRK123456789,OTP verified on delivery,False,,2026-09-10
+disp_002,goods_services_not_as_described_or_defective,5999,2026-08-10,True,2026-08-13,TRK987654321,Signed by recipient,True,True,2026-09-15
+disp_003,credit_not_processed,1899,2026-07-20,True,2026-07-23,TRK555111222,Signed by recipient,True,False,2026-09-05
+disp_004,unauthorized_transaction,12999,2026-08-15,True,2026-08-18,TRK777888999,OTP verified on delivery,False,,2026-09-20
+disp_005,goods_services_not_received,3499,2026-08-05,False,,,,True,,2026-09-12
