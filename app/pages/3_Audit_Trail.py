@@ -1,4 +1,4 @@
-﻿import streamlit as st
+import streamlit as st
 import os
 import sys
 
@@ -10,6 +10,25 @@ st.title("Audit Trail")
 st.caption("Full, timestamped history of every AI draft, human decision, and outcome — nothing overwritten, nothing hidden.")
 
 all_events = utils.read_audit_trail()
+
+if all_events:
+    drafts = [e for e in all_events if e["event_type"] in ("DRAFT_CREATED", "DRAFT_REVISED")]
+    decisions = [e for e in all_events if e["event_type"] == "HUMAN_DECISION"]
+    approved = [e for e in decisions if e.get("human_decision") == "approved"]
+    revised = [e for e in decisions if e.get("human_decision") == "rejected_for_revision"]
+    edited = [e for e in decisions if e.get("human_decision") == "human_edited"]
+    weak_flags = [e for e in all_events if (e.get("ai_assessment") or "").strip().upper() == "WEAK"]
+    st.subheader("How the AI has performed")
+    s1, s2, s3, s4 = st.columns(4)
+    s1.metric("AI drafts generated", len(drafts))
+    s2.metric("Approved as-is", len(approved))
+    s3.metric("Sent back for revision", len(revised))
+    s4.metric("Rewritten by a human", len(edited))
+    total_dec = len(approved) + len(revised) + len(edited)
+    if total_dec > 0:
+        rate = 100.0 * len(approved) / total_dec
+        st.caption("Human reviewers accepted the AI draft unchanged " + format(rate, ".0f") + "% of the time. " + str(len(weak_flags)) + " draft(s) were self-flagged WEAK by the AI, warning against contesting.")
+    st.divider()
 dispute_ids = sorted(set(e['dispute_id'] for e in all_events))
 
 if not dispute_ids:

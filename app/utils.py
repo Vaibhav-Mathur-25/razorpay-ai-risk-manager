@@ -169,6 +169,7 @@ def generate_fake_webhook_payload(dispute_id, reason_code, amount, delivered=Tru
             }
         },
         "_simulated_extra_context": {
+            "customer_id": random.choice(CUSTOMER_POOL),
             "order_date": order_date.strftime("%Y-%m-%d"),
             "delivered": delivered,
             "delivery_date": (order_date + timedelta(days=random.randint(2,7))).strftime("%Y-%m-%d") if delivered else None,
@@ -186,6 +187,7 @@ def webhook_to_dispute_row(payload):
     respond_by_date = datetime.fromtimestamp(dispute_entity["respond_by"]).strftime("%Y-%m-%d")
     return {
         "dispute_id": dispute_entity["id"],
+        "customer_id": extra.get("customer_id"),
         "reason_code": dispute_entity["reason_code"],
         "amount": dispute_entity["amount"],
         "order_date": extra["order_date"],
@@ -197,3 +199,107 @@ def webhook_to_dispute_row(payload):
         "within_return_window": extra["within_return_window"],
         "respond_by": respond_by_date
     }
+# --- Simulated new order for Return-Risk demo ---
+
+def generate_random_order():
+    import random
+    categories = ['apparel', 'electronics', 'groceries', 'books', 'home_furniture']
+    category_probs = [0.35, 0.15, 0.25, 0.15, 0.10]
+    price_ranges = {
+        'apparel': (300, 3000), 'electronics': (1000, 50000),
+        'groceries': (50, 1500), 'books': (100, 1200), 'home_furniture': (500, 20000)
+    }
+    payment_methods = ['credit_card', 'debit_card', 'upi', 'netbanking', 'cod']
+    payment_probs = [0.25, 0.20, 0.35, 0.10, 0.10]
+
+    category = random.choices(categories, weights=category_probs)[0]
+    pmin, pmax = price_ranges[category]
+    item_price = round(random.uniform(pmin, pmax), 2)
+    quantity = random.randint(1, 4)
+    payment_method = random.choices(payment_methods, weights=payment_probs)[0]
+    payment_attempts = 1 if payment_method == 'cod' else random.choices([1, 2, 3], weights=[0.75, 0.20, 0.05])[0]
+    delivery_days = random.choices([2, 3, 4, 5, 6, 7, 10, 14], weights=[0.15, 0.20, 0.20, 0.15, 0.10, 0.10, 0.06, 0.04])[0]
+    customer_id = random.choice(CUSTOMER_POOL)
+    _hist = CUSTOMER_REGISTRY[customer_id]
+    customer_past_returns = _hist["past_returns"]
+    customer_past_chargebacks = _hist["past_chargebacks"]
+    address_mismatch = 1 if random.random() < 0.05 else 0
+
+    return {
+        "order_id": f"ORD{random.randint(10000, 99999)}",
+        "customer_id": customer_id,
+        "customer_past_returns": customer_past_returns,
+        "customer_past_chargebacks": customer_past_chargebacks,
+        "product_category": category,
+        "item_price": item_price,
+        "quantity": quantity,
+        "order_value": round(item_price * quantity, 2),
+        "payment_method": payment_method,
+        "payment_attempts": payment_attempts,
+        "delivery_days": delivery_days,
+        "address_mismatch": address_mismatch
+    }
+
+# --- Recommended action based on risk score ---
+
+def recommend_action(probability):
+    if probability >= 0.5:
+        return "HIGH", "Recommend: require prepayment / deny COD"
+    elif probability >= 0.25:
+        return "MEDIUM", "Recommend: manual review before shipping"
+    else:
+        return "LOW", "Recommend: auto-approve"
+
+# --- Plain-language explanation of top risk drivers for one order ---
+
+def explain_order_risk(order):
+    reasons = []
+    if order['customer_past_returns'] >= 3:
+        reasons.append(f"{order['customer_past_returns']} past returns by this customer")
+    if order['delivery_days'] >= 10:
+        reasons.append(f"long {order['delivery_days']}-day delivery window")
+    if order['product_category'] == 'apparel':
+        reasons.append("apparel category (higher fit/sizing return rate)")
+    if order['payment_attempts'] > 1:
+        reasons.append(f"{order['payment_attempts']} payment attempts before success")
+    if order['address_mismatch'] == 1:
+        reasons.append("billing/shipping address mismatch")
+    if order['item_price'] * order['quantity'] > 15000:
+        reasons.append("high order value")
+    if not reasons:
+        reasons.append("no elevated risk factors detected")
+    return reasons[:2]
+# --- Shared customer registry (links orders and disputes to the same customers) ---
+
+CUSTOMER_POOL = [1027, 1137, 1434, 2033, 2137, 2381, 2843, 3094, 3547, 3577, 3705, 4142, 4861, 4866]
+
+def build_customer_registry():
+    """Deterministic customer history, so the same customer always has the same record."""
+    import random
+    registry = {}
+    for cid in CUSTOMER_POOL:
+        rng = random.Random(cid)  # seeded per customer -> stable across reruns
+        registry[cid] = {
+            "customer_id": cid,
+            "past_returns": rng.choices([0, 1, 2, 3, 4, 5, 6], weights=[25, 25, 15, 12, 10, 7, 6])[0],
+            "past_chargebacks": rng.choices([0, 1, 2, 3], weights=[80, 12, 5, 3])[0],
+            "total_orders": rng.randint(3, 15)
+        }
+    return registry
+
+CUSTOMER_REGISTRY = build_customer_registry()
+
+def get_customer_history(customer_id):
+    return CUSTOMER_REGISTRY.get(int(customer_id))
+
+def customer_risk_note(customer_id):
+    """One-line plain-language summary of a customer's risk history."""
+    h = get_customer_history(customer_id)
+    if h is None:
+        return "No history on file for this customer."
+    parts = [f"{h['total_orders']} total orders", f"{h['past_returns']} returns"]
+    if h['past_chargebacks'] > 0:
+        parts.append(f"{h['past_chargebacks']} prior chargeback(s)")
+    else:
+        parts.append("no prior chargebacks")
+    return "Customer " + str(customer_id) + ": " + ", ".join(parts)

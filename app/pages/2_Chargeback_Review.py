@@ -7,8 +7,12 @@ import random
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 import utils
 
-st.set_page_config(page_title="Chargeback Review", page_icon="⚖️", layout="wide")
+st.set_page_config(page_title="Chargeback Review", page_icon="ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¦ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¯ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â", layout="wide")
 st.title("Chargeback Review Queue")
+
+APPROVAL_LIMIT = 5000
+role = st.sidebar.radio("Acting as", ["Reviewer", "Manager"], help="Reviewers can approve disputes under Rs.5,000. Higher-value disputes require Manager approval.")
+st.sidebar.caption("Reviewer approval limit: Rs." + format(APPROVAL_LIMIT, ",.0f"))
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'test_disputes.csv')
 
@@ -44,6 +48,8 @@ for idx, row in disputes_df.iterrows():
         col2.markdown(f"{row['reason_code']}")
         col3.markdown(f"Rs.{row['amount']}")
         col4.markdown(f"Due: {row['respond_by']}")
+        if "customer_id" in row and pd.notna(row["customer_id"]):
+            st.caption("Risk history: " + utils.customer_risk_note(row["customer_id"]))
 
         if dispute_id not in st.session_state.drafts:
             if col4.button("Generate Draft", key=f"gen_{dispute_id}"):
@@ -66,20 +72,44 @@ for idx, row in disputes_df.iterrows():
                 st.markdown(f"**Draft Response:**")
                 st.text_area("draft_text", value=draft["parsed"]["draft_response"], height=150, key=f"draft_{dispute_id}", label_visibility="collapsed")
 
-            b1, b2, b3 = st.columns(3)
-            if b1.button("Approve", key=f"approve_{dispute_id}"):
-                utils.log_audit_event(dispute_id=dispute_id, event_type="HUMAN_DECISION",
-                                       human_decision="approved", final_submitted_text=draft["parsed"]["draft_response"])
-                utils.log_audit_event(dispute_id=dispute_id, event_type="SUBMITTED",
-                                       final_submitted_text=draft["parsed"]["draft_response"])
-                st.success("Approved and submitted.")
+                if "previous_parsed" in draft:
+                    st.divider()
+                    st.markdown("### How this draft changed")
+                    st.markdown("**Original draft:**")
+                    st.info(draft["previous_parsed"]["draft_response"])
+                    st.markdown("**Reviewer rejected it:**")
+                    st.warning("Reason: " + str(draft["revision_reason"]) + " - " + str(draft["revision_note"]))
+                    st.markdown("**AI revised draft:**")
+                    st.success(draft["parsed"]["draft_response"])
+                    prev_a = (draft["previous_parsed"]["assessment"] or "").strip().upper()
+                    new_a = (draft["parsed"]["assessment"] or "").strip().upper()
+                    if prev_a == new_a:
+                        st.caption(f"Assessment unchanged ({new_a}) - the model strengthened its argument without overstating its confidence.")
+                    else:
+                        st.caption(f"Assessment changed: {prev_a} to {new_a}")
 
-            if b2.button("Reject", key=f"reject_{dispute_id}"):
-                st.session_state[f"show_reject_{dispute_id}"] = True
+            cb_decision_key = f"cb_decision_{dispute_id}"
+            if cb_decision_key in st.session_state:
+                st.success(st.session_state[cb_decision_key])
+            else:
+                b1, b2, b3 = st.columns(3)
+                over_limit = (role == "Reviewer") and (float(row["amount"]) > APPROVAL_LIMIT)
+                if over_limit:
+                    b1.button("Approve", key=f"approve_{dispute_id}", disabled=True)
+                    st.caption("Rs." + format(float(row["amount"]), ",.0f") + " exceeds the Reviewer approval limit - Manager approval required.")
+                elif b1.button("Approve", key=f"approve_{dispute_id}"):
+                    utils.log_audit_event(dispute_id=dispute_id, event_type="HUMAN_DECISION",
+                                           human_decision="approved", human_notes="Approved by: " + role, final_submitted_text=draft["parsed"]["draft_response"])
+                    utils.log_audit_event(dispute_id=dispute_id, event_type="SUBMITTED",
+                                           final_submitted_text=draft["parsed"]["draft_response"])
+                    st.session_state[cb_decision_key] = "Approved and submitted."
+                    st.rerun()
 
-            if b3.button("Edit", key=f"edit_{dispute_id}"):
-                st.session_state[f"show_edit_{dispute_id}"] = True
+                if b2.button("Reject", key=f"reject_{dispute_id}"):
+                    st.session_state[f"show_reject_{dispute_id}"] = True
 
+                if b3.button("Edit", key=f"edit_{dispute_id}"):
+                    st.session_state[f"show_edit_{dispute_id}"] = True
             if st.session_state.get(f"show_reject_{dispute_id}"):
                 reason = st.selectbox("Reason", ["missing_evidence", "wrong_tone", "factually_incorrect", "incomplete_argument", "other"], key=f"reason_{dispute_id}")
                 note = st.text_input("What should change?", key=f"note_{dispute_id}")
@@ -89,7 +119,14 @@ for idx, row in disputes_df.iterrows():
                     with st.spinner("AI revising..."):
                         revised_raw = utils.revise_dispute_response(draft["row"], draft["raw"], reason, note)
                         revised_parsed = utils.parse_llm_response(revised_raw)
-                        st.session_state.drafts[dispute_id] = {"raw": revised_raw, "parsed": revised_parsed, "row": draft["row"]}
+                        st.session_state.drafts[dispute_id] = {
+                            "raw": revised_raw,
+                            "parsed": revised_parsed,
+                            "row": draft["row"],
+                            "previous_parsed": draft["parsed"],
+                            "revision_reason": reason,
+                            "revision_note": note
+                        }
                         utils.log_audit_event(dispute_id=dispute_id, event_type="DRAFT_REVISED",
                                                ai_assessment=revised_parsed["assessment"], ai_draft_text=revised_raw)
                     st.session_state[f"show_reject_{dispute_id}"] = False

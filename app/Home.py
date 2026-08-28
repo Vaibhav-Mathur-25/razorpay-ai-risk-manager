@@ -30,9 +30,9 @@ st.divider()
 
 col1, col2 = st.columns(2)
 with col1:
-    st.markdown("#### Return-Risk Scorer")
-    st.write("Predicts return likelihood for a new order using customer history, pricing, delivery, and payment features. See the honest false-positive vs. false-negative cost tradeoff, not just accuracy.")
-    st.page_link("pages/1_Return_Risk_Scorer.py", label="Go to Return-Risk Scorer →")
+    st.markdown("#### Order Risk Queue")
+    st.write("A live queue of incoming orders, each automatically scored for return risk with a plain-language explanation and a recommended action — plus the honest false-positive vs. false-negative cost tradeoff behind the model.")
+    st.page_link("pages/1_Order_Risk_Queue.py", label="Go to Order Risk Queue →")
 
 with col2:
     st.markdown("#### Chargeback Review")
