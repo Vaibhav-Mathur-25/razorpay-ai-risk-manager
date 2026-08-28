@@ -1,4 +1,8 @@
-# AI Risk Manager — Razorpay Buildathon (Track 2)
+# Refund Rehab
+
+*Treating the merchant's returns and chargeback problem.*
+
+Built for Razorpay's AI Risk Manager buildathon (Track 2).
 
 **Goal:** Stop merchant losses from returns and chargebacks, with every AI-driven money action kept explainable, bounded, and human-gated.
 
@@ -98,9 +102,15 @@ Key findings, evidenced not asserted:
 A Streamlit application (`app/`) ties both components into one working product, rather than leaving them as notebook cells:
 
 - **Home** — project overview, at-a-glance metrics, and navigation.
-- **Return-Risk Scorer** — live scoring form for a new order, plus the honest cost-tradeoff analysis surfaced directly in the UI (not buried in docs).
+- **Order Risk Queue** — a live queue of incoming orders, each scored automatically on arrival, showing the risk tier, a plain-language explanation of the top risk drivers, the expected rupee loss on that order, and the customer's risk history. High-risk orders surface a human decision (approve anyway / require prepayment) rather than acting automatically. Queue-level totals show order value and aggregate expected loss. A manual scoring form is retained for ad-hoc checks, and the honest cost-tradeoff analysis is surfaced directly in the UI rather than buried in docs.
 - **Chargeback Review** — the human-gated queue: generate an AI draft, see its evidence-strength assessment, and approve / reject-for-revision / edit-directly, exactly as specified in the original design.
-- **Audit Trail** — a full, timestamped, cycle-grouped history of every draft, decision, revision, and outcome for any dispute, proving (not just claiming) explainability.
+- **Audit Trail** — a full, timestamped, cycle-grouped history of every draft, decision, revision, and outcome for any dispute, proving (not just claiming) explainability. A summary panel reports how the AI actually performed: how many drafts were approved unchanged, sent back for revision, or rewritten by a human, plus how many the AI itself flagged WEAK and advised against contesting.
+
+**Visible AI-to-human feedback loop:** when a reviewer rejects a draft, the UI shows the original draft, the reviewer's stated objection, and the AI's revision in sequence — so the causality is visible rather than implied. It also reports whether the AI's evidence-strength assessment changed, which surfaced a useful robustness property in testing: asked to argue more forcefully, the model strengthened its argument without inflating its own confidence rating.
+
+**Bounded authority:** the Chargeback Review page includes a role selector (Reviewer / Manager). Reviewers cannot approve disputes above a set value threshold — the approve action is disabled with an explanation, and the acting role is written into the audit record. This makes the "bounded" requirement a working mechanism rather than a claim.
+
+**Cross-linked customers:** orders and disputes draw from one shared customer registry, so both pages can show the same customer's history (total orders, past returns, prior chargebacks). A dispute from a customer who has disputed before is visibly different from a first-time dispute.
 
 **Simulated dispute ingestion:** since this build doesn't have a live Razorpay merchant account, new disputes are introduced via a simulated `payment.dispute.created` webhook — a button on the Chargeback Review page generates a payload matching Razorpay's actual webhook schema (`entity`, `payment_id`, `reason_code`, `respond_by`, etc.) and feeds it into the same review pipeline a real webhook would. A production version would replace this with a real endpoint subscribed to Razorpay's dispute webhooks.
 

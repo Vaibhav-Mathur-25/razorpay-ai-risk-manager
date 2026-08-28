@@ -1,9 +1,9 @@
 import streamlit as st
 
-st.set_page_config(page_title="AI Risk Manager", page_icon="📊", layout="wide")
+st.set_page_config(page_title="Refund Rehab", page_icon="📊", layout="wide")
 
-st.title("AI Risk Manager")
-st.subheader("Reducing merchant losses from returns and chargebacks")
+st.title("Refund Rehab")
+st.subheader("Treating the merchant's returns and chargeback problem")
 
 st.markdown("A two-part system for e-commerce risk: predict returns before they happen, and handle chargeback disputes with a human always in control of the final call.")
 
