@@ -8,7 +8,7 @@ Built for Razorpay's AI Risk Manager buildathon (Track 2).
 
 **Live demo:** https://refund-rehab.streamlit.app
 
-**Builder:** Solo, CS & Data Science undergrad. Background in imbalanced classification (churn prediction) and SQL/Python/Power BI pipelines. First-time LLM API user.
+**Builder:** Solo, CS & Data Science undergrad. Background in imbalanced classification (churn prediction) and SQL/Python/Power BI pipelines, with prior LLM API work on small undeployed projects (a chatbot and a virtual assistant). This is the first system taken through to deployment.
 
 ---
 
