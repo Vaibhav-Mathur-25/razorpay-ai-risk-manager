@@ -6,6 +6,8 @@ Built for Razorpay's AI Risk Manager buildathon (Track 2).
 
 **Goal:** Stop merchant losses from returns and chargebacks, with every AI-driven money action kept explainable, bounded, and human-gated.
 
+**Live demo:** https://refund-rehab.streamlit.app
+
 **Builder:** Solo, CS & Data Science undergrad. Background in imbalanced classification (churn prediction) and SQL/Python/Power BI pipelines. First-time LLM API user.
 
 ---
@@ -94,6 +96,9 @@ Key findings, evidenced not asserted:
 - Evaluated on 5 hand-designed cases, not a statistically large sample — sufficient to validate the design's behavior, not to claim a measured win-rate.
 - No automated win/loss outcome tracking yet exists (the `outcome` field is logged but currently only ever set manually/simulated) — a real system would need to ingest Razorpay's dispute-status webhooks to populate this automatically.
 - Anthropic Claude billing was blocked during this build; Gemini was substituted and validated, but a side-by-side comparison of both models on the same cases (an interesting robustness check) wasn't completed due to time constraints.
+- Per-category loss rates are reasoned defaults, not measured figures — no return-handling cost data was available to fit them. They are exposed as editable inputs precisely so they are read as assumptions rather than findings; a merchant would set them from their own restocking and shipping costs.
+- Simulated disputes and orders added during a session live in Streamlit session state only, so they do not survive a page refresh or persist across users. Only the seed dispute set is durable.
+- Model artifacts were pickled under scikit-learn 1.6.1 and load under 1.9.0, producing a version warning. Dependency versions should be pinned before anyone else runs this.
 
 ---
 
@@ -102,7 +107,11 @@ Key findings, evidenced not asserted:
 A Streamlit application (`app/`) ties both components into one working product, rather than leaving them as notebook cells:
 
 - **Home** — project overview, at-a-glance metrics, and navigation.
-- **Order Risk Queue** — a live queue of incoming orders, each scored automatically on arrival, showing the risk tier, a plain-language explanation of the top risk drivers, the expected rupee loss on that order, and the customer's risk history. High-risk orders surface a human decision (approve anyway / require prepayment) rather than acting automatically. Queue-level totals show order value and aggregate expected loss. A manual scoring form is retained for ad-hoc checks, and the honest cost-tradeoff analysis is surfaced directly in the UI rather than buried in docs.
+- **Order Risk Queue** — a live queue of incoming orders, each scored automatically on arrival, showing the risk tier, a plain-language explanation of the top risk drivers, the expected rupee loss on that order, and the customer's risk history. High-risk orders surface a human decision (approve anyway / require prepayment) rather than acting automatically; once an order is dispositioned it leaves the pending queue and the headline totals drop accordingly, so the numbers respond to reviewer action. A manual scoring form is retained for ad-hoc checks, and the honest cost-tradeoff analysis is surfaced directly in the UI rather than buried in docs.
+
+**Expected loss, modelled properly:** the queue does not simply report `probability × order value`, which would assume a return costs the merchant the full order value. A returned item usually comes back and can be resold, so the merchant loses only the handling cost — return shipping, restocking, non-refunded gateway fees, and resale markdown. Expected loss is therefore `probability × order value × loss rate`, structurally mirroring the `PD × LGD × EAD` form used in credit risk. Loss rates are **per category** (groceries approach total loss since perishables can't be resold; books are near-fully recoverable; electronics sit in between due to open-box discounting) and are exposed as an editable sidebar control rather than hidden constants, because they are merchant assumptions, not model outputs. The UI shows both figures — order value at risk, and expected cost after applying the loss rate — so the distinction is never blurred.
+
+**A feature deliberately not built:** the obvious next move was to have "require prepayment" reduce an order's risk score. Before building it, the model was queried directly on the same order under each payment method. Prepaid methods scored *equal to or slightly higher* than COD, because `payment_method` drives chargeback risk in this dataset, not return risk — COD was excluded from chargeback risk entirely, since there is no card to dispute. Shipping the feature anyway would have made risk visibly rise when a reviewer mitigated it. Instead, dispositioning an order clears it from the pending queue: the totals move because work was cleared, not because risk was conjured away.
 - **Chargeback Review** — the human-gated queue: generate an AI draft, see its evidence-strength assessment, and approve / reject-for-revision / edit-directly, exactly as specified in the original design.
 - **Audit Trail** — a full, timestamped, cycle-grouped history of every draft, decision, revision, and outcome for any dispute, proving (not just claiming) explainability. A summary panel reports how the AI actually performed: how many drafts were approved unchanged, sent back for revision, or rewritten by a human, plus how many the AI itself flagged WEAK and advised against contesting.
 
