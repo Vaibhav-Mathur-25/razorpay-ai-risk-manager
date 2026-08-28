@@ -38,22 +38,22 @@ A custom-built synthetic dataset (not Kaggle) — 20,000 transactions, 19 featur
 Base rates were calibrated by generating, checking the actual resulting label rate, and adjusting the intercept — standard practice for synthetic data, not a failure of the first attempt.
 
 ### Model & evaluation
-- **Random Forest**, `class_weight='balanced'`, stratified 80/20 split (16,000 / 4,000).
-- **ROC-AUC: 0.72** — deliberately not higher, since labels were generated with intentional randomness (a perfect classifier here would indicate overfitting to noise, not genuine signal).
-- **At default threshold:** precision 0.37, recall 0.59 on the minority class.
-- **Feature importances match the intended causal design** — `customer_past_returns` is the top feature, followed by price and `product_category_apparel`, with payment-method features weakest — direct evidence the model learned real structure, not noise.
+- **Logistic regression**, `class_weight='balanced'`, feature-scaled in a pipeline, stratified 80/20 split (16,000 / 4,000).
+- **Selected by benchmark, not by default.** Three model families were compared on the same split: logistic regression (**0.738 AUC**), Random Forest (0.721), and a single-feature heuristic using past returns alone (0.642). The linear model won, which is what the data-generating process predicts — labels were produced by a logistic formula, so a linear decision boundary matches the true structure and the forest has to approximate a smooth surface with axis-aligned splits. The Random Forest was built and deployed first; it was replaced once the benchmark showed the simpler model was better.
+- **At default threshold:** precision 0.35, recall 0.70 on the return class. Confusion matrix: 2,032 TN / 1,120 FP / 254 FN / 594 TP.
+- **On the AUC figure:** ~0.74 is close to the ceiling this dataset allows. Labels were sampled from a probability rather than thresholded, so a row with p=0.7 returns only 70% of the time — that randomness is irreducible. A model scoring 0.95 here would indicate leakage, not skill.
 
 ### Honest cost tradeoff (no cherry-picking)
 A false positive here (flagging a low-risk order, e.g. triggering a COD-denial policy) and a false negative (missing an actual future return) were quantified in ₹ terms, not just reported as abstract precision/recall:
 
-- **False negatives** (350 in test set): ~₹150–300 each in shipping/restocking cost → ₹52,500–105,000 total.
-- **False positives** (832 in test set): assuming ~20% of wrongly-flagged genuine customers abandon the purchase, at a ~₹300–500 acquisition cost each → ₹50,000–83,000 total.
+- **False negatives** (254 in test set): ~₹150–300 each in shipping/restocking cost → ₹38,000–76,000 total.
+- **False positives** (1,120 in test set): assuming ~20% of wrongly-flagged genuine customers abandon the purchase, at a ~₹300–500 acquisition cost each → ₹67,000–112,000 total.
 
-**These are roughly comparable** — the initial assumption that false positives are "safer" than false negatives did not hold once actual volumes were multiplied through. This is reported honestly rather than optimized away.
+**False positives are the dominant cost.** This inverted the starting assumption. Flagging a good order intuitively feels like the cheaper mistake — it only annoys someone — while missing a return costs real money. But the model produces roughly four times as many false positives as false negatives, and that volume difference outweighs the lower per-instance cost. The conclusion also moved when the model changed: under the earlier Random Forest (832 FP / 350 FN) the two error types were roughly comparable, and the higher-recall logistic model tipped the balance toward false positives. The cost analysis is therefore a property of the deployed model, not a fixed fact about the problem — worth re-running whenever the model changes.
 
-**On threshold tuning:** F1-optimal thresholding was tested and rejected — it increased false positives (832 → 1,194) for a negligible F1 gain, because F1 doesn't account for the actual (comparable) costs of each error type. The default threshold was kept, and cost-weighted threshold optimization is flagged as future work rather than silently applying a metric that doesn't match the real business objective.
+**On threshold tuning:** F1-optimal thresholding was tested and rejected — it pushes further toward recall, worsening the error type that already costs more. F1 weights precision and recall equally, which is not what the rupee figures say. The default threshold was kept, and cost-weighted threshold optimization is flagged as future work rather than silently applying a metric that doesn't match the business objective.
 
-**On model selection:** alternative models/hyperparameter tuning were considered and deliberately not pursued — since labels were synthetically generated with a known noise ceiling (~0.72 AUC by design), a different model was unlikely to meaningfully improve results, and that time was better spent on the LLM component.
+**On hyperparameter tuning:** deliberately not pursued beyond the model-family comparison. Labels were generated by sampling from a probability rather than thresholding it, so a large share of the remaining error is irreducible by construction. Tuning would chase fractions of a point against that ceiling; the time went to the LLM component instead.
 
 ---
 
